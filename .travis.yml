@@ -1,0 +1,25 @@
+language: generic 
+sudo: required
+
+services: 
+  - docker
+
+before_install:
+  docker build -t willempoort/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true willempoort/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t willempoort/multi-client ./client
+  - docker build -t willempoort/multi-nginx ./nginx
+  - docker build -t willempoort/multi-server ./server
+  - docker build -t willempoort/multi-worker ./worker
+  # Log in to the docker CLI with the environment variables you set in Travisci.com 
+  # for this project under "settings"/"Environment Variables"
+  - echo "$DOCKER_PASSORD" | docker login -u "$DOCKER_ID" --pasword-stdin
+  # Take this images and push them to docker hub
+  - docker push willempoort/multi-client
+  - docker push willempoort/multi-nginx
+  - docker push willempoort/multi-server
+  - docker push willempoort/multi-worker
