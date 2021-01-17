@@ -17,6 +17,7 @@ after_success:
   - docker build -t willempoort/multi-worker ./worker
   # Log in to the docker CLI with the environment variables you set in Travisci.com 
   # for this project under "settings"/"Environment Variables"
+  # Be sure to escape special caracters with \
   - echo "$DOCKER_PASSORD" | docker login -u "$DOCKER_ID" --pasword-stdin
   # Take this images and push them to docker hub
   - docker push willempoort/multi-client
